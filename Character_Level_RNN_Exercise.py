@@ -45,7 +45,7 @@ text[:100]
 chars = tuple(set(text))
 int2char = dict(enumerate(chars))
 char2int = {ch: ii for ii, ch in int2char.items()}
-type(char2int)
+
 
 
 #%%
@@ -129,21 +129,28 @@ def get_batches(arr, batch_size, seq_length):
     '''
     
     ## TODO: Get the number of batches we can make
-    n_batches = 
+    batch_size_total = batch_size * seq_length
+    # the total number of batched that can be made
+    n_batches = len(arr)//batch_size_total
+    # to keep enough char to have full batched
+    arr = arr[:n_batches * batch_size_total]
+    # Reshape into batch size rows
     
-    ## TODO: Keep only enough characters to make full batches
-    arr = 
+    arr = arr.reshape((batch_size, -1))
+
     
-    ## TODO: Reshape into batch_size rows
-    arr = 
-    
-    ## TODO: Iterate over the batches using a window of size seq_length
+    #Iterate over the batches using a window of size seq_length
     for n in range(0, arr.shape[1], seq_length):
         # The features
-        x = 
+        x = arr[:, n:n+seq_length]
         # The targets, shifted by one
-        y = 
+        y = np.zeros_like(x)
+        try:
+            y[:, -1], y[:, -1] = x[:, 1], arr[:, n+seq_length]
+        except IndexError
+            y[:, -1], y[:, -1] = x[:, 1], arr[:, 0]
         yield x, y
+
 
 #%% [markdown]
 # ### Test Your Implementation
