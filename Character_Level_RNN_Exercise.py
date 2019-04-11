@@ -29,7 +29,7 @@ with open('data/anna.txt', 'r') as f:
 # Let's check out the first 100 characters, make sure everything is peachy. According to the [American Book Review](http://americanbookreview.org/100bestlines.asp), this is the 6th best first line of a book ever.
 
 #%%
-text[1000:1200]
+text[:100]
 
 #%% [markdown]
 # ### Tokenization
@@ -82,9 +82,8 @@ def one_hot_encode(arr, n_labels):
 
 #%%
 # check that the function works as expected
-test_seq = np.array([[3, 5, 1, 13, 6, 18, 19]])
-print(*test_seq.sh)
-one_hot = one_hot_encode(test_seq, 20)
+test_seq = np.array([[3, 5, 1]])
+one_hot = one_hot_encode(test_seq, 8)
 
 print(one_hot)
 
