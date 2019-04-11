@@ -140,15 +140,16 @@ def get_batches(arr, batch_size, seq_length):
 
     
     #Iterate over the batches using a window of size seq_length
+
     for n in range(0, arr.shape[1], seq_length):
         # The features
         x = arr[:, n:n+seq_length]
         # The targets, shifted by one
         y = np.zeros_like(x)
         try:
-            y[:, -1], y[:, -1] = x[:, 1], arr[:, n+seq_length]
-        except IndexError
-            y[:, -1], y[:, -1] = x[:, 1], arr[:, 0]
+            y[:, :-1], y[:, -1] = x[:, 1:], arr[:, n+seq_length]
+        except IndexError:
+            y[:, :-1], y[:, -1] = x[:, 1:], arr[:, 0]
         yield x, y
 
 
