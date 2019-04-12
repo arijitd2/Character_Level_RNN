@@ -256,21 +256,41 @@ class CharRNN(nn.Module):
         self.int2char = dict(enumerate(self.chars))
         self.char2int = {ch: ii for ii, ch in self.int2char.items()}
         
-        ## TODO: define the layers of the model
+        ## TODO: define the LSTM
+        self.lstm = nn.LSTM(len(self.chars), n_hidden, n_layers, 
+                            dropout=drop_prob, batch_first=True)
+        
+        ## TODO: define a dropout layer
+        self.dropout = nn.Dropout(drop_prob)
+        
+        ## TODO: define the final, fully-connected output layer
+        self.fc = nn.Linear(n_hidden, len(self.chars))
       
     
     def forward(self, x, hidden):
-        ''' Forward pass through the network. 
-            These inputs are x, and the hidden/cell state `hidden`. '''
+        #''' Forward pass through the network. 
+         #   These inputs are x, and the hidden/cell state `hidden`. '''
                 
         ## TODO: Get the outputs and the new hidden state from the lstm
+        r_output, hidden = self.lstm(x, hidden)
         
+        ## TODO: pass through a dropout layer
+        out = self.dropout(r_output)
+        
+        # Stack up LSTM outputs using view
+        # you may need to use contiguous to reshape the output
+        out = out.contiguous().view(-1, self.n_hidden)
+        
+        ## TODO: put x through the fully-connected layer
+        out = self.fc(out)
+        
+       
         # return the final output and the hidden state
         return out, hidden
     
     
     def init_hidden(self, batch_size):
-        ''' Initializes hidden state '''
+        # ''' Initializes hidden state '''
         # Create two new tensors with sizes n_layers x batch_size x n_hidden,
         # initialized to zero, for hidden state and cell state of LSTM
         weight = next(self.parameters()).data
@@ -398,8 +418,8 @@ def train(net, data, epochs=10, batch_size=10, seq_length=50, lr=0.001, clip=5, 
 #%%
 ## TODO: set your model hyperparameters
 # define and print the net
-n_hidden=
-n_layers=
+n_hidden=512
+n_layers=2
 
 net = CharRNN(chars, n_hidden, n_layers)
 print(net)
@@ -408,9 +428,9 @@ print(net)
 # ### Set your training hyperparameters!
 
 #%%
-batch_size = 
-seq_length = 
-n_epochs =  # start small if you are just testing initial behavior
+batch_size = 128
+seq_length = 100
+n_epochs = 5 # start small if you are just testing initial behavior
 
 # train the model
 train(net, encoded, epochs=n_epochs, batch_size=batch_size, seq_length=seq_length, lr=0.001, print_every=10)
